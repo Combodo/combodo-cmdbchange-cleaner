@@ -6,7 +6,7 @@ use CMDBSource;
 use DateTime;
 use IssueLog;
 
-if (class_exists(\AbstractWeeklyScheduledProcess)){
+if (class_exists("AbstractWeeklyScheduledProcess")){
     class CMDBChangeScheduledCleaner extends \AbstractWeeklyScheduledProcess implements \iScheduledProcess {
         use CMDBChangeCleaner;
 

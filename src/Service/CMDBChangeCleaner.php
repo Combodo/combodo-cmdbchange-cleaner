@@ -49,7 +49,7 @@ trait CMDBChangeCleaner {
      * @throws \MySQLHasGoneAwayException
      */
     function ExecuteQuery($sSqlQuery, $sLogMessage){
-        IssueLog::Debug($sSqlQuery);
+        //IssueLog::Info($sSqlQuery);
         $fStartTime = microtime(true);
         /** @var \mysqli_result $oQueryResult */
         $oQueryResult = CMDBSource::Query($sSqlQuery);
