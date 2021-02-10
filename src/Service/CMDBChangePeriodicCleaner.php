@@ -5,8 +5,10 @@ namespace Combodo\iTop\Extension\CMDBChangeCleaner\Service;
 use CMDBSource;
 use IssueLog;
 
-class ChangeOpProgressiveCleaner extends AbstractChangeOpCleaner implements \iBackgroundProcess{
-	public function GetPeriodicity()
+class CMDBChangePeriodicCleaner implements \iBackgroundProcess{
+    use CMDBChangeCleaner;
+
+    public function GetPeriodicity()
 	{
 		return \MetaModel::GetModuleSetting('combodo-cmdbchange-cleaner', 'date_update_interval', 1);
 	}

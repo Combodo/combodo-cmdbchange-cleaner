@@ -6,7 +6,9 @@ use CMDBSource;
 use DateTime;
 use IssueLog;
 
-class ChangeOpMassiveCleaner extends \AbstractWeeklyScheduledProcess implements \iScheduledProcess {
+class CMDBChangeScheduledCleaner extends \AbstractWeeklyScheduledProcess implements \iScheduledProcess {
+    use CMDBChangeCleaner;
+
     public function Process($iUnixTimeLimit)
     {
         return $this->BulkDelete($this->GetBulkSize());

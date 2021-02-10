@@ -24,8 +24,8 @@ SetupWebPage::AddModule(
 		//
 		'datamodel' => array(
 			'vendor/autoload.php',
-			'src/Service/ChangeOpProgressiveCleaner.php',
-			'src/Service/ChangeOpMassiveCleaner.php',
+			'src/Service/CMDBChangePeriodicCleaner.php',
+			'src/Service/CMDBChangeScheduledCleaner.php',
 		),
 		'webservice' => array(
 			

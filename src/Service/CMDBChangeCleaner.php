@@ -5,7 +5,7 @@ namespace Combodo\iTop\Extension\CMDBChangeCleaner\Service;
 use CMDBSource;
 use IssueLog;
 
-abstract class AbstractChangeOpCleaner {
+trait CMDBChangeCleaner {
     /**
      * @param $iBulkSize
      * @return string
@@ -16,6 +16,10 @@ abstract class AbstractChangeOpCleaner {
     public function BulkDelete($iBulkSize)
     {
         $sPrefix = \MetaModel::GetConfig()->Get('db_subname');
+
+        if ($iBulkSize === 0){
+            return "Task configured to avoid cleaning (bulk_size=0).";
+        }
 
         $aIds= $this->GetIds($sPrefix, $iBulkSize);
 
@@ -50,7 +54,10 @@ abstract class AbstractChangeOpCleaner {
         /** @var \mysqli_result $oQueryResult */
         $oQueryResult = CMDBSource::Query($sSqlQuery);
         $fElapsed = microtime(true) - $fStartTime;
-        IssueLog::Info(sprintf("%s : executed in %.3f s", $sLogMessage, $fElapsed));
+        IssueLog::Info(sprintf("[%s] %s : executed in %.3f s",
+            (new \ReflectionClass($this))->getShortName(),
+            $sLogMessage,
+            $fElapsed));
         return $oQueryResult;
     }
 
