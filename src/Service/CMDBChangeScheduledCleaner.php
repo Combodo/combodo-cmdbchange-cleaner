@@ -14,6 +14,7 @@ if (class_exists(\AbstractWeeklyScheduledProcess)){
 
         public function Process($iUnixTimeLimit)
         {
+            ini_set('max_execution_time', max(3600, ini_get('max_execution_time')));
             return $this->BulkDelete($this->GetBulkSize());
         }
 

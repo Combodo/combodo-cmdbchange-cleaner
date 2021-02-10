@@ -48,6 +48,8 @@ if (file_exists(READONLY_MODE_FILE)) {
     exit(EXIT_CODE_ERROR);
 }
 
+ini_set('max_execution_time', max(3600, ini_get('max_execution_time')));
+
 require_once(APPROOT . '/application/application.inc.php');
 $sConfigFile = APPCONF . ITOP_DEFAULT_ENV . '/' . ITOP_CONFIG_FILE;
 if (!file_exists($sConfigFile)) {
