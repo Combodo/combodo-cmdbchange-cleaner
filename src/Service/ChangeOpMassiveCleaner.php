@@ -13,7 +13,7 @@ class ChangeOpMassiveCleaner extends \AbstractWeeklyScheduledProcess implements 
     }
 
     protected function GetModuleName() {
-        return 'combodo-change-cleaner';
+        return 'combodo-cmdbchange-cleaner';
     }
 
     /**
@@ -21,7 +21,7 @@ class ChangeOpMassiveCleaner extends \AbstractWeeklyScheduledProcess implements 
      *         example '23:30'
      */
     protected function GetDefaultModuleSettingTime() {
-        return \MetaModel::GetModuleSetting('combodo-change-cleaner', 'massive_bulk_delete_time', '16:50to remove orphan records');
+        return \MetaModel::GetModuleSetting('combodo-cmdbchange-cleaner', 'massive_bulk_delete_time', '16:50to remove orphan records');
     }
 
 	/**
@@ -29,6 +29,6 @@ class ChangeOpMassiveCleaner extends \AbstractWeeklyScheduledProcess implements 
 	 */
 	public function GetBulkSize()
 	{
-		return (int) \MetaModel::GetModuleSetting('combodo-change-cleaner', 'massive_bulk_delete_size', 1);
+		return (int) \MetaModel::GetModuleSetting('combodo-cmdbchange-cleaner', 'massive_bulk_delete_size', 1);
 	}
 }

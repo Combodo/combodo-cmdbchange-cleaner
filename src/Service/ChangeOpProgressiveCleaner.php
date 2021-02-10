@@ -8,7 +8,7 @@ use IssueLog;
 class ChangeOpProgressiveCleaner extends AbstractChangeOpCleaner implements \iBackgroundProcess{
 	public function GetPeriodicity()
 	{
-		return \MetaModel::GetModuleSetting('combodo-change-cleaner', 'date_update_interval', 1);
+		return \MetaModel::GetModuleSetting('combodo-cmdbchange-cleaner', 'date_update_interval', 1);
 	}
 
 	/**
@@ -16,7 +16,7 @@ class ChangeOpProgressiveCleaner extends AbstractChangeOpCleaner implements \iBa
 	 */
 	public function GetBulkSize()
 	{
-		return (int) \MetaModel::GetModuleSetting('combodo-change-cleaner', 'progressive_bulk_delete_size', 0);
+		return (int) \MetaModel::GetModuleSetting('combodo-cmdbchange-cleaner', 'progressive_bulk_delete_size', 0);
 	}
 
 	public function Process($iUnixTimeLimit)

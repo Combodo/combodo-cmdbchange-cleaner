@@ -4,7 +4,7 @@
 			"Combodo\\iTop\\Extension\\ChangeCleaner\\" : "src"
 		}
 	},
-	"name" : "combodo/combodo-change-cleaner",
+	"name" : "combodo/combodo-cmdbchange-cleaner",
 	"type" : "itop-extension",
 	"description" : "History cleaner",
 	"require" : {
