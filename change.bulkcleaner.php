@@ -17,6 +17,10 @@
  * You should have received a copy of the GNU Affero General Public License
  */
 
+
+//WARNING: this script is standalone and can be deployed alone.
+// It should not have any outside dependency except iTop core.
+
 const EXIT_CODE_ERROR = -1;
 const EXIT_CODE_FATAL = -2;
 
@@ -264,8 +268,18 @@ try
         if ($oMutex->TryLock())
         {
             $iBulkDelete = ReadMandatoryParam($oP, 'bulk_size', 'integer');
+            if ($iBulkDelete <0) {
+                $oP->p("Error: invalid value ($iBulkDelete) for bulk_size parameter.");
+                $oP->output();
+                exit(EXIT_CODE_FATAL);
+            }
 
             $iCountLimit = utils::ReadParam('count_lines_limit', 0, true, 'integer');
+            if ($iBulkDelete < -1) {
+                $oP->p("Error: invalid value ($iCountLimit) for count_lines_limit parameter.");
+                $oP->output();
+                exit(EXIT_CODE_FATAL);
+            }
 
             //$iCreatedCount = ProvisionDb(100);
             //return "ProvisionDb $iCreatedCount added lines";
@@ -277,6 +291,8 @@ try
                 }else{
                     $oP->p("Found at least $iCount CMDBChange row(s) to delete");
                 }
+            } else{
+                $oP->p("Found exactly $iCount CMDBChange row(s) to delete");
             }
 
             $oP->p(BulkDelete($iBulkDelete));
@@ -314,5 +330,4 @@ finally
     }
 }
 
-$oP->p("Exiting: ".time().' ('.date('Y-m-d H:i:s').')');
 $oP->Output();

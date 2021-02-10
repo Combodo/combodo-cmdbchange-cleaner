@@ -6,7 +6,7 @@
 	},
 	"name" : "combodo/combodo-cmdbchange-cleaner",
 	"type" : "itop-extension",
-	"description" : "History cleaner",
+	"description" : "orphan CMDBChange cleaner",
 	"require" : {
 	}
 }
