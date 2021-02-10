@@ -1,0 +1,12 @@
+{
+	"autoload" : {
+		"psr-4" : {
+			"Combodo\\iTop\\Extension\\ChangeCleaner\\" : "src"
+		}
+	},
+	"name" : "combodo/combodo-change-cleaner",
+	"type" : "itop-extension",
+	"description" : "History cleaner",
+	"require" : {
+	}
+}
