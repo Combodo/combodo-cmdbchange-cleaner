@@ -282,19 +282,17 @@ try
             }
 
             //$iCreatedCount = ProvisionDb(100);
-            //return "ProvisionDb $iCreatedCount added lines";
+            //echo "ProvisionDb $iCreatedCount added lines";
 
             $iCount = CountLinesToRemove($iCountLimit);
-            if ($iCount !== -1){
-                if ($iCount < $iCountLimit){
-                    $oP->p("Found exactly $iCount CMDBChange row(s) to delete");
-                }else{
-                    $oP->p("Found at least $iCount CMDBChange row(s) to delete");
-                }
-            } else{
+
+            if (($iCountLimit == -1) || ($iCount < $iCountLimit)){
                 $oP->p("Found exactly $iCount CMDBChange row(s) to delete");
+            }else{
+                $oP->p("Found at least $iCount CMDBChange row(s) to delete");
             }
 
+            return "";
             $oP->p(BulkDelete($iBulkDelete));
         }
         else

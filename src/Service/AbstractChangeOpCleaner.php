@@ -28,7 +28,7 @@ abstract class AbstractChangeOpCleaner {
             implode(',', $aIds)
         );
 
-        $this->ExecuteQuery($sBulkDelete);
+        $this->ExecuteQuery($sBulkDelete, "Bulk deletion query of $iBulkSize row(s)");
 
         $sMsg= sprintf("%d CMDBChange row(s) deleted.", count($aIds));
         IssueLog::Info($sMsg);
@@ -36,20 +36,21 @@ abstract class AbstractChangeOpCleaner {
     }
 
     /**
-     * @param $sSqlQuery
+     * @param string $sSqlQuery
+     * @param string $sLogMessage
      *
      * @return \mysqli_result
      * @throws \CoreException
      * @throws \MySQLException
      * @throws \MySQLHasGoneAwayException
      */
-    function ExecuteQuery($sSqlQuery){
-        IssueLog::Info($sSqlQuery);
+    function ExecuteQuery($sSqlQuery, $sLogMessage){
+        IssueLog::Debug($sSqlQuery);
         $fStartTime = microtime(true);
         /** @var \mysqli_result $oQueryResult */
         $oQueryResult = CMDBSource::Query($sSqlQuery);
         $fElapsed = microtime(true) - $fStartTime;
-        IssueLog::Info(sprintf("Query executed in %.3f s",  $fElapsed));
+        IssueLog::Info(sprintf("%s : executed in %.3f s", $sLogMessage, $fElapsed));
         return $oQueryResult;
     }
 
@@ -70,7 +71,7 @@ ORDER BY id DESC
 LIMIT {$iBulkSize};
 SQL;
 
-        $oQueryResult = $this->ExecuteQuery($sSqlQuery);
+        $oQueryResult = $this->ExecuteQuery($sSqlQuery, "Get CMDBChange $iBulkSize ID(s) to remove");
 
         $aIds = [];
         while($aRow = $oQueryResult->fetch_array()){
