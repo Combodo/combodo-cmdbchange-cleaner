@@ -6,5 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Combodo\\iTop\\Extension\\ChangeCleaner\\' => array($baseDir . '/src'),
+    'Combodo\\iTop\\Extension\\CMDBChangeCleaner\\' => array($baseDir . '/src'),
 );

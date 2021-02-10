@@ -6,7 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Combodo\\iTop\\Extension\\ChangeCleaner\\Service\\AbstractChangeOpCleaner' => $baseDir . '/src/Service/AbstractChangeOpCleaner.php',
-    'Combodo\\iTop\\Extension\\ChangeCleaner\\Service\\ChangeOpMassiveCleaner' => $baseDir . '/src/Service/ChangeOpMassiveCleaner.php',
-    'Combodo\\iTop\\Extension\\ChangeCleaner\\Service\\ChangeOpProgressiveCleaner' => $baseDir . '/src/Service/ChangeOpProgressiveCleaner.php',
+    'Combodo\\iTop\\Extension\\CMDBChangeCleaner\\Service\\AbstractChangeOpCleaner' => $baseDir . '/src/Service/AbstractChangeOpCleaner.php',
+    'Combodo\\iTop\\Extension\\CMDBChangeCleaner\\Service\\ChangeOpMassiveCleaner' => $baseDir . '/src/Service/ChangeOpMassiveCleaner.php',
+    'Combodo\\iTop\\Extension\\CMDBChangeCleaner\\Service\\ChangeOpProgressiveCleaner' => $baseDir . '/src/Service/ChangeOpProgressiveCleaner.php',
 );

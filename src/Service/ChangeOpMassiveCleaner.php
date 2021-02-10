@@ -1,6 +1,6 @@
 <?php
 
-namespace Combodo\iTop\Extension\ChangeCleaner\Service;
+namespace Combodo\iTop\Extension\CMDBChangeCleaner\Service;
 
 use CMDBSource;
 use DateTime;

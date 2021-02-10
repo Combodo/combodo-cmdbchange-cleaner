@@ -9,21 +9,21 @@ class ComposerStaticInit612a32cd7520fe3f4f1ba8e8a65ea50a
     public static $prefixLengthsPsr4 = array (
         'C' => 
         array (
-            'Combodo\\iTop\\Extension\\ChangeCleaner\\' => 37,
+            'Combodo\\iTop\\Extension\\CMDBChangeCleaner\\' => 41,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Combodo\\iTop\\Extension\\ChangeCleaner\\' => 
+        'Combodo\\iTop\\Extension\\CMDBChangeCleaner\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
     );
 
     public static $classMap = array (
-        'Combodo\\iTop\\Extension\\ChangeCleaner\\Service\\AbstractChangeOpCleaner' => __DIR__ . '/../..' . '/src/Service/AbstractChangeOpCleaner.php',
-        'Combodo\\iTop\\Extension\\ChangeCleaner\\Service\\ChangeOpMassiveCleaner' => __DIR__ . '/../..' . '/src/Service/ChangeOpMassiveCleaner.php',
-        'Combodo\\iTop\\Extension\\ChangeCleaner\\Service\\ChangeOpProgressiveCleaner' => __DIR__ . '/../..' . '/src/Service/ChangeOpProgressiveCleaner.php',
+        'Combodo\\iTop\\Extension\\CMDBChangeCleaner\\Service\\AbstractChangeOpCleaner' => __DIR__ . '/../..' . '/src/Service/AbstractChangeOpCleaner.php',
+        'Combodo\\iTop\\Extension\\CMDBChangeCleaner\\Service\\ChangeOpMassiveCleaner' => __DIR__ . '/../..' . '/src/Service/ChangeOpMassiveCleaner.php',
+        'Combodo\\iTop\\Extension\\CMDBChangeCleaner\\Service\\ChangeOpProgressiveCleaner' => __DIR__ . '/../..' . '/src/Service/ChangeOpProgressiveCleaner.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

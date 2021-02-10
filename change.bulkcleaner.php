@@ -99,7 +99,7 @@ function BulkDelete($iBulkSize)
         implode(',', $aIds)
     );
 
-    ExecuteQuery($sBulkDelete);
+    ExecuteQuery($sBulkDelete, "Bulk deletion query of $iBulkSize row(s)");
 
     $sMsg= sprintf("%d CMDBChange row(s) deleted.", count($aIds));
     IssueLog::Info($sMsg);
@@ -107,20 +107,22 @@ function BulkDelete($iBulkSize)
 }
 
 /**
- * @param $sSqlQuery
+ * @param string $sSqlQuery
+ * @param string $sLogMessage
  *
  * @return \mysqli_result
  * @throws \CoreException
  * @throws \MySQLException
  * @throws \MySQLHasGoneAwayException
  */
-function ExecuteQuery($sSqlQuery){
-    IssueLog::Info($sSqlQuery);
+function ExecuteQuery($sSqlQuery, $sLogMessage){
+    IssueLog::Info(sprintf("%s : ongoing step", $sLogMessage));
+    IssueLog::Debug($sSqlQuery);
     $fStartTime = microtime(true);
     /** @var \mysqli_result $oQueryResult */
     $oQueryResult = CMDBSource::Query($sSqlQuery);
     $fElapsed = microtime(true) - $fStartTime;
-    IssueLog::Info(sprintf("Query executed in %.3f s",  $fElapsed));
+    IssueLog::Info(sprintf("%s : executed in %.3f s", $sLogMessage, $fElapsed));
     return $oQueryResult;
 }
 /**
@@ -140,7 +142,7 @@ ORDER BY id DESC
 LIMIT {$iBulkSize};
 SQL;
 
-    $oQueryResult = ExecuteQuery($sSqlQuery);
+    $oQueryResult = ExecuteQuery($sSqlQuery, "Get CMDBChange $iBulkSize ID(s) to remove");
 
     $aIds = [];
     while($aRow = $oQueryResult->fetch_array()){
@@ -181,7 +183,7 @@ SQL;
         $sSqlQuery = str_replace("LIMIT", "", $sSqlQuery);
     }
 
-    $oQueryResult = ExecuteQuery($sSqlQuery);
+    $oQueryResult = ExecuteQuery($sSqlQuery, "Count Lines to remove (max: $iLimit)");
 
     while($aRow = $oQueryResult->fetch_array()){
         return (int) $aRow['count'];
@@ -209,7 +211,7 @@ function ProvisionDb($iMax){
 	("test{$i}", NOW(), 'email-processing');
 SQL;
 
-        ExecuteQuery($sSqlQuery);
+        ExecuteQuery($sSqlQuery, "Provision orphan 10 CMDBChanges ($i)");
     }
 
     return $iMax * 10;
@@ -286,13 +288,14 @@ try
 
             $iCount = CountLinesToRemove($iCountLimit);
 
-            if (($iCountLimit == -1) || ($iCount < $iCountLimit)){
-                $oP->p("Found exactly $iCount CMDBChange row(s) to delete");
-            }else{
-                $oP->p("Found at least $iCount CMDBChange row(s) to delete");
+            if ($iCountLimit !== 0){
+                if (($iCountLimit == -1) || ($iCount < $iCountLimit)){
+                    $oP->p("Found exactly $iCount CMDBChange row(s) to delete");
+                }else{
+                    $oP->p("Found at least $iCount CMDBChange row(s) to delete");
+                }
             }
 
-            return "";
             $oP->p(BulkDelete($iBulkDelete));
         }
         else

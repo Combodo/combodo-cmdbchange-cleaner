@@ -1,7 +1,7 @@
 {
 	"autoload" : {
 		"psr-4" : {
-			"Combodo\\iTop\\Extension\\ChangeCleaner\\" : "src"
+			"Combodo\\iTop\\Extension\\CMDBChangeCleaner\\" : "src"
 		}
 	},
 	"name" : "combodo/combodo-cmdbchange-cleaner",
