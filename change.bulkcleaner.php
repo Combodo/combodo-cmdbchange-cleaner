@@ -35,7 +35,7 @@ for($i=0;$i<=4; $i++){
         $bFound = true;
         break;
     }
-    $sPathPrefix .= "../";
+    $sPathPrefix .= "/..";
 }
 if (! $bFound){
     echo "iTop file approot.inc.php not found. Please install this script in iTop directory. Exiting...\n";
@@ -74,7 +74,7 @@ function UsageAndExit($oP) {
 
     if ($bModeCLI) {
         $oP->p("USAGE:\n");
-        $oP->p("php change.bulkcleaner.php --auth_user=<login> --auth_pwd=<password> --bulk_size=<bulk_size> [-count_lines_limit=<count_lines_limit>] [--param_file=<file>]\n");
+        $oP->p("php change.bulkcleaner.php --auth_user=<login> --auth_pwd=<password> --bulk_size=<bulk_size> [--count_lines_limit=<count_lines_limit>] [--param_file=<file>]\n");
     } else {
         $oP->p("Optional parameters: verbose, param_file, status_only\n");
     }
