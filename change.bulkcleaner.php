@@ -194,7 +194,7 @@ SQL;
     return 0;
 }
 
-function ProvisionDb($iMax){
+/*function ProvisionDb($iMax){
     $sPrefix = \MetaModel::GetConfig()->Get('db_subname');
 
     for ($i=0;$i<$iMax;$i++){
@@ -217,7 +217,7 @@ SQL;
     }
 
     return $iMax * 10;
-}
+}*/
 
 if (!utils::IsModeCLI()){
     echo "Not CLI mode. Exiting...\n";
