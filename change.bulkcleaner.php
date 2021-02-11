@@ -62,7 +62,7 @@ require_once(APPROOT . '/application/startup.inc.php');
 function ReadMandatoryParam($oP, $sParam, $sSanitizationFilter = 'parameter') {
     $sValue = utils::ReadParam($sParam, null, true, $sSanitizationFilter);
     if (is_null($sValue)) {
-        $oP->p("ERROR: Missing argument '$sParam'\n");
+        PrintWithDateAndTime("ERROR: Missing argument '$sParam'\n");
         UsageAndExit($oP);
     }
 
@@ -73,13 +73,20 @@ function UsageAndExit($oP) {
     $bModeCLI = ($oP instanceof CLIPage);
 
     if ($bModeCLI) {
-        $oP->p("USAGE:\n");
-        $oP->p("php change.bulkcleaner.php --auth_user=<login> --auth_pwd=<password> --bulk_size=<bulk_size> [--count_lines_limit=<count_lines_limit>] [--param_file=<file>]\n");
+        PrintWithDateAndTime("USAGE:\n");
+        PrintWithDateAndTime("php change.bulkcleaner.php --auth_user=<login> --auth_pwd=<password> --bulk_size=<bulk_size> [--count_lines_limit=<count_lines_limit>] [--param_file=<file>]\n");
     } else {
-        $oP->p("Optional parameters: verbose, param_file, status_only\n");
+        PrintWithDateAndTime("Optional parameters: verbose, param_file, status_only\n");
     }
     $oP->output();
     exit(EXIT_CODE_FATAL);
+}
+
+function PrintWithDateAndTime($sText)
+{
+    echo sprintf("[%s] %s\n",
+        date('Y-m-d H:i:s'),
+        $sText);
 }
 
 function BulkDelete($iBulkSize)
@@ -241,21 +248,21 @@ try
     }
     else
     {
-        $oP->p("Access wrong credentials ('$sAuthUser')");
+        PrintWithDateAndTime("Access wrong credentials ('$sAuthUser')");
         $oP->output();
         exit(EXIT_CODE_ERROR);
     }
 
     if (!UserRights::IsAdministrator())
     {
-        $oP->p("Access restricted to administrators");
+        PrintWithDateAndTime("Access restricted to administrators");
         $oP->Output();
         exit(EXIT_CODE_ERROR);
     }
 }
 catch (Exception $e)
 {
-    $oP->p("Error: ".$e->GetMessage());
+    PrintWithDateAndTime("Error: ".$e->GetMessage());
     $oP->output();
     exit(EXIT_CODE_FATAL);
 }
@@ -265,7 +272,7 @@ try
     $oMutex = new iTopMutex('dbcleanup');
     if (!MetaModel::DBHasAccess(ACCESS_ADMIN_WRITE))
     {
-        $oP->p("A maintenance is ongoing");
+        PrintWithDateAndTime("A maintenance is ongoing");
     }
     else
     {
@@ -273,14 +280,14 @@ try
         {
             $iBulkDelete = ReadMandatoryParam($oP, 'bulk_size', 'integer');
             if ($iBulkDelete <0) {
-                $oP->p("Error: invalid value ($iBulkDelete) for bulk_size parameter.");
+                PrintWithDateAndTime("Error: invalid value ($iBulkDelete) for bulk_size parameter.");
                 $oP->output();
                 exit(EXIT_CODE_FATAL);
             }
 
             $iCountLimit = utils::ReadParam('count_lines_limit', 0, true, 'integer');
             if ($iBulkDelete < -1) {
-                $oP->p("Error: invalid value ($iCountLimit) for count_lines_limit parameter.");
+                PrintWithDateAndTime("Error: invalid value ($iCountLimit) for count_lines_limit parameter.");
                 $oP->output();
                 exit(EXIT_CODE_FATAL);
             }
@@ -292,28 +299,28 @@ try
 
             if ($iCountLimit !== 0){
                 if (($iCountLimit == -1) || ($iCount < $iCountLimit)){
-                    $oP->p("Found exactly $iCount CMDBChange row(s) to delete");
+                    PrintWithDateAndTime("Found exactly $iCount CMDBChange row(s) to delete");
                 }else{
-                    $oP->p("Found at least $iCount CMDBChange row(s) to delete");
+                    PrintWithDateAndTime("Found at least $iCount CMDBChange row(s) to delete");
                 }
             }
 
-            $oP->p(BulkDelete($iBulkDelete));
+            PrintWithDateAndTime(BulkDelete($iBulkDelete));
         }
         else
         {
             // Exit silently
-            $oP->p("Already running...");
+            PrintWithDateAndTime("Already running...");
         }
     }
 }
 catch (Exception $e)
 {
-    $oP->p("ERROR: '".$e->getMessage()."'");
+    PrintWithDateAndTime("ERROR: '".$e->getMessage()."'");
     if ($bDebug)
     {
         // Might contain verb parameters such a password...
-        $oP->p($e->getTraceAsString());
+        PrintWithDateAndTime($e->getTraceAsString());
     }
 }
 finally
@@ -324,11 +331,11 @@ finally
     }
     catch (Exception $e)
     {
-        $oP->p("ERROR: '".$e->getMessage()."'");
+        PrintWithDateAndTime("ERROR: '".$e->getMessage()."'");
         if ($bDebug)
         {
             // Might contain verb parameters such a password...
-            $oP->p($e->getTraceAsString());
+            PrintWithDateAndTime($e->getTraceAsString());
         }
     }
 }
