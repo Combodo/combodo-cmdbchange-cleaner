@@ -74,7 +74,7 @@ function UsageAndExit($oP) {
 
     if ($bModeCLI) {
         PrintWithDateAndTime("USAGE:\n");
-        PrintWithDateAndTime("php change.bulkcleaner.php --auth_user=<login> --auth_pwd=<password> --bulk_size=<bulk_size> [--count_lines_limit=<count_lines_limit>] [--param_file=<file>]\n");
+        PrintWithDateAndTime("php change.bulkcleaner.php --auth_user=<login> --auth_pwd=<password>  [--param_file=<file>] --bulk_size=<bulk_size> [--count_lines_limit=<count_lines_limit>] [--param_file=<file>]\n");
     } else {
         PrintWithDateAndTime("Optional parameters: verbose, param_file, status_only\n");
     }
