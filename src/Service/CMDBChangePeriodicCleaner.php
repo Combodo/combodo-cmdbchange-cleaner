@@ -21,8 +21,13 @@ class CMDBChangePeriodicCleaner implements \iBackgroundProcess{
 		return (int) \MetaModel::GetModuleSetting('combodo-cmdbchange-cleaner', 'periodic_cleaning_bulk_size', 5000);
 	}
 
+	public function IsDebug()
+	{
+		return \MetaModel::GetModuleSetting('combodo-cmdbchange-cleaner', 'debug', false);
+	}
+
 	public function Process($iUnixTimeLimit)
 	{
-		return $this->BulkDelete($this->GetBulkSize());
+		return $this->BulkDelete($this->GetBulkSize(), $this->IsDebug());
 	}
 }

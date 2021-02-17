@@ -15,7 +15,7 @@ if (class_exists("AbstractWeeklyScheduledProcess")){
         public function Process($iUnixTimeLimit)
         {
             ini_set('max_execution_time', max(3600, ini_get('max_execution_time')));
-            return $this->BulkDelete($this->GetBulkSize());
+            return $this->BulkDelete($this->GetBulkSize(), $this->IsDebug());
         }
 
         protected function GetModuleName() {
@@ -37,5 +37,10 @@ if (class_exists("AbstractWeeklyScheduledProcess")){
         {
             return (int) \MetaModel::GetModuleSetting('combodo-cmdbchange-cleaner', 'scheduled_cleaning_bulk_size', 0);
         }
+
+	    public function IsDebug()
+	    {
+		    return \MetaModel::GetModuleSetting('combodo-cmdbchange-cleaner', 'debug', false);
+	    }
     }
 }

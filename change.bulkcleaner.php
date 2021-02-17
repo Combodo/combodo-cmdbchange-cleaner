@@ -122,7 +122,7 @@ function BulkDelete($iBulkSize, $bDebug)
 	$fElapsed = microtime(true) - $fStartTime;
 
 	$sMsg= sprintf("%d CMDBChange row(s) deleted in %.3f s.", count($aIds), $fElapsed);
-	IssueLog::Info($sMsg, $bDebug);
+	HandleLog($sMsg, $bDebug);
 
     return $sMsg;
 }

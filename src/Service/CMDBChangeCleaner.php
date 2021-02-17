@@ -6,14 +6,16 @@ use CMDBSource;
 use IssueLog;
 
 trait CMDBChangeCleaner {
-    /**
-     * @param $iBulkSize
-     * @return string
-     * @throws \CoreException
-     * @throws \MySQLException
-     * @throws \MySQLHasGoneAwayException
-     */
-    public function BulkDelete($iBulkSize)
+	/**
+	 * @param $iBulkSize
+	 * @param $bDebug
+	 *
+	 * @return string
+	 * @throws \CoreException
+	 * @throws \MySQLException
+	 * @throws \MySQLHasGoneAwayException
+	 */
+    public function BulkDelete($iBulkSize, $bDebug)
     {
         $sPrefix = \MetaModel::GetConfig()->Get('db_subname');
 
@@ -21,7 +23,7 @@ trait CMDBChangeCleaner {
             return "Task configured to avoid cleaning (bulk_size=0).";
         }
 
-        $aIds= $this->GetIds($sPrefix, $iBulkSize);
+        $aIds= $this->GetIds($sPrefix, $iBulkSize, $bDebug);
 
         if (count($aIds) == 0){
             return "No CMDBChange row to delete.";
@@ -32,12 +34,22 @@ trait CMDBChangeCleaner {
             implode(',', $aIds)
         );
 
-        $this->ExecuteQuery($sBulkDelete, "Bulk deletion query of $iBulkSize row(s)");
+	    $fStartTime = microtime(true);
+        $this->ExecuteQuery($sBulkDelete, "Bulk deletion query of $iBulkSize row(s)", $bDebug);
+	    $fElapsed = microtime(true) - $fStartTime;
 
-        $sMsg= sprintf("%d CMDBChange row(s) deleted.", count($aIds));
-        IssueLog::Info($sMsg);
+        $sMsg= sprintf("%d CMDBChange row(s) deleted in %.3f s.", count($aIds), $fElapsed);
+        $this->HandleLog($sMsg, $bDebug);
         return $sMsg;
     }
+
+	function HandleLog($sMsg, $bDebug){
+		if ($bDebug){
+			IssueLog::Info($sMsg);
+		}else{
+			IssueLog::Debug($sMsg);
+		}
+	}
 
     /**
      * @param string $sSqlQuery
@@ -48,28 +60,32 @@ trait CMDBChangeCleaner {
      * @throws \MySQLException
      * @throws \MySQLHasGoneAwayException
      */
-    function ExecuteQuery($sSqlQuery, $sLogMessage){
-        //IssueLog::Info($sSqlQuery);
+    function ExecuteQuery($sSqlQuery, $sLogMessage, $bDebug){
         $fStartTime = microtime(true);
         /** @var \mysqli_result $oQueryResult */
         $oQueryResult = CMDBSource::Query($sSqlQuery);
         $fElapsed = microtime(true) - $fStartTime;
-        IssueLog::Info(sprintf("[%s] %s : executed in %.3f s",
+        $sMsg = sprintf("[%s] %s : executed in %.3f s",
             (new \ReflectionClass($this))->getShortName(),
             $sLogMessage,
-            $fElapsed));
+            $fElapsed);
+        $this->HandleLog($sMsg, $bDebug);
+
         return $oQueryResult;
     }
 
-    /**
-     * @param string $sPrefix
-     * @param int $iBulkSize
-     *
-     * @throws \CoreException
-     * @throws \MySQLException
-     * @throws \MySQLHasGoneAwayException
-     */
-    function GetIds($sPrefix, $iBulkSize){
+	/**
+	 * @param string $sPrefix
+	 * @param int $iBulkSize
+	 *
+	 * @param $bDebug
+	 *
+	 * @return array
+	 * @throws \CoreException
+	 * @throws \MySQLException
+	 * @throws \MySQLHasGoneAwayException
+	 */
+    function GetIds($sPrefix, $iBulkSize, $bDebug){
         $sSqlQuery = <<<SQL
 SELECT c.id as id FROM ${sPrefix}priv_change AS c 
 LEFT JOIN ${sPrefix}priv_changeop AS co ON co.changeid = c.id 
@@ -78,7 +94,7 @@ ORDER BY id DESC
 LIMIT {$iBulkSize};
 SQL;
 
-        $oQueryResult = $this->ExecuteQuery($sSqlQuery, "Get CMDBChange $iBulkSize ID(s) to remove");
+        $oQueryResult = $this->ExecuteQuery($sSqlQuery, "Get CMDBChange $iBulkSize ID(s) to remove", $bDebug);
 
         $aIds = [];
         while($aRow = $oQueryResult->fetch_array()){
