@@ -69,14 +69,22 @@ function ReadMandatoryParam($oP, $sParam, $sSanitizationFilter = 'parameter') {
     return trim($sValue);
 }
 
+function HandleLog($sMsg, $bDebug){
+	if ($bDebug){
+		IssueLog::Info($sMsg);
+	}else{
+		IssueLog::Debug($sMsg);
+	}
+}
+
 function UsageAndExit($oP) {
     $bModeCLI = ($oP instanceof CLIPage);
 
     if ($bModeCLI) {
         PrintWithDateAndTime("USAGE:\n");
-        PrintWithDateAndTime("php change.bulkcleaner.php --auth_user=<login> --auth_pwd=<password>  [--param_file=<file>] --bulk_size=<bulk_size> [--count_lines_limit=<count_lines_limit>] [--param_file=<file>]\n");
+        PrintWithDateAndTime("php change.bulkcleaner.php --auth_user=<login> --auth_pwd=<password>  [--param_file=<file>] [--debug=true] --bulk_size=<bulk_size> [--count_lines_limit=<count_lines_limit>]\n");
     } else {
-        PrintWithDateAndTime("Optional parameters: verbose, param_file, status_only\n");
+        PrintWithDateAndTime("Optional parameters: count_lines_limit, param_file, debug\n");
     }
     $oP->output();
     exit(EXIT_CODE_FATAL);
@@ -89,7 +97,7 @@ function PrintWithDateAndTime($sText)
         $sText);
 }
 
-function BulkDelete($iBulkSize)
+function BulkDelete($iBulkSize, $bDebug)
 {
     if ($iBulkSize == 0){
         return "Nothing to do";
@@ -97,7 +105,7 @@ function BulkDelete($iBulkSize)
 
     $sPrefix = \MetaModel::GetConfig()->Get('db_subname');
 
-    $aIds= GetIds($sPrefix, $iBulkSize);
+    $aIds= GetIds($sPrefix, $iBulkSize, $bDebug);
 
     if (count($aIds) == 0){
         return "No CMDBChange row to delete.";
@@ -108,10 +116,14 @@ function BulkDelete($iBulkSize)
         implode(',', $aIds)
     );
 
-    ExecuteQuery($sBulkDelete, "Bulk deletion query of $iBulkSize row(s)");
 
-    $sMsg= sprintf("%d CMDBChange row(s) deleted.", count($aIds));
-    IssueLog::Info($sMsg);
+	$fStartTime = microtime(true);
+	ExecuteQuery($sBulkDelete, "Bulk deletion query of $iBulkSize row(s)", $bDebug);
+	$fElapsed = microtime(true) - $fStartTime;
+
+	$sMsg= sprintf("%d CMDBChange row(s) deleted in %.3f s.", count($aIds), $fElapsed);
+	IssueLog::Info($sMsg, $bDebug);
+
     return $sMsg;
 }
 
@@ -124,14 +136,14 @@ function BulkDelete($iBulkSize)
  * @throws \MySQLException
  * @throws \MySQLHasGoneAwayException
  */
-function ExecuteQuery($sSqlQuery, $sLogMessage){
-    IssueLog::Info(sprintf("%s : ongoing step", $sLogMessage));
-    IssueLog::Debug($sSqlQuery);
-    $fStartTime = microtime(true);
+function ExecuteQuery($sSqlQuery, $sLogMessage, $bDebug){
+	$fStartTime = microtime(true);
+    HandleLog(sprintf("%s : ongoing step", $sLogMessage), $bDebug);
+	HandleLog($sSqlQuery, $bDebug);
     /** @var \mysqli_result $oQueryResult */
     $oQueryResult = CMDBSource::Query($sSqlQuery);
     $fElapsed = microtime(true) - $fStartTime;
-    IssueLog::Info(sprintf("%s : executed in %.3f s", $sLogMessage, $fElapsed));
+	HandleLog(sprintf("%s : executed in %.3f s", $sLogMessage, $fElapsed), $bDebug);
     return $oQueryResult;
 }
 /**
@@ -142,7 +154,7 @@ function ExecuteQuery($sSqlQuery, $sLogMessage){
  * @throws \MySQLException
  * @throws \MySQLHasGoneAwayException
  */
-function GetIds($sPrefix, $iBulkSize){
+function GetIds($sPrefix, $iBulkSize, $bDebug){
     $sSqlQuery = <<<SQL
 SELECT c.id as id FROM ${sPrefix}priv_change AS c 
 LEFT JOIN ${sPrefix}priv_changeop AS co ON co.changeid = c.id 
@@ -151,7 +163,7 @@ ORDER BY id DESC
 LIMIT {$iBulkSize};
 SQL;
 
-    $oQueryResult = ExecuteQuery($sSqlQuery, "Get CMDBChange $iBulkSize ID(s) to remove");
+    $oQueryResult = ExecuteQuery($sSqlQuery, "Get CMDBChange $iBulkSize ID(s) to remove", $bDebug);
 
     $aIds = [];
     while($aRow = $oQueryResult->fetch_array()){
@@ -162,14 +174,15 @@ SQL;
 }
 
 /**
- * @param $sPrefix
  * @param int $iLimit
+ * @param $bDebug
+ *
  * @return int
- * @throws CoreException
- * @throws MySQLException
- * @throws MySQLHasGoneAwayException
+ * @throws \CoreException
+ * @throws \MySQLException
+ * @throws \MySQLHasGoneAwayException
  */
-function CountLinesToRemove($iLimit=0){
+function CountLinesToRemove($iLimit=0, $bDebug){
     if ($iLimit==0){
         return -1;
     }
@@ -192,7 +205,7 @@ SQL;
         $sSqlQuery = str_replace("LIMIT", "", $sSqlQuery);
     }
 
-    $oQueryResult = ExecuteQuery($sSqlQuery, "Count Lines to remove (max: $iLimit)");
+    $oQueryResult = ExecuteQuery($sSqlQuery, "Count Lines to remove (max: $iLimit)", $bDebug);
 
     while($aRow = $oQueryResult->fetch_array()){
         return (int) $aRow['count'];
@@ -200,31 +213,6 @@ SQL;
 
     return 0;
 }
-
-/*function ProvisionDb($iMax){
-    $sPrefix = \MetaModel::GetConfig()->Get('db_subname');
-
-    for ($i=0;$i<$iMax;$i++){
-        $sSqlQuery = <<<SQL
-	INSERT INTO {$sPrefix}priv_change (`userinfo`, `date`, `origin`) 
-	values
-	("test{$i}", NOW(), 'email-processing'),
-	("test{$i}", NOW(), 'email-processing'),
-	("test{$i}", NOW(), 'email-processing'),
-	("test{$i}", NOW(), 'email-processing'),
-	("test{$i}", NOW(), 'email-processing'),
-	("test{$i}", NOW(), 'email-processing'),
-	("test{$i}", NOW(), 'email-processing'),
-	("test{$i}", NOW(), 'email-processing'),
-	("test{$i}", NOW(), 'email-processing'),
-	("test{$i}", NOW(), 'email-processing');
-SQL;
-
-        ExecuteQuery($sSqlQuery, "Provision orphan 10 CMDBChanges ($i)");
-    }
-
-    return $iMax * 10;
-}*/
 
 if (!utils::IsModeCLI()){
     echo "Not CLI mode. Exiting...\n";
@@ -292,10 +280,7 @@ try
                 exit(EXIT_CODE_FATAL);
             }
 
-            //$iCreatedCount = ProvisionDb(100);
-            //echo "ProvisionDb $iCreatedCount added lines";
-
-            $iCount = CountLinesToRemove($iCountLimit);
+            $iCount = CountLinesToRemove($iCountLimit, $bDebug);
 
             if ($iCountLimit !== 0){
                 if (($iCountLimit == -1) || ($iCount < $iCountLimit)){
@@ -305,7 +290,7 @@ try
                 }
             }
 
-            PrintWithDateAndTime(BulkDelete($iBulkDelete));
+            PrintWithDateAndTime(BulkDelete($iBulkDelete, $bDebug));
         }
         else
         {
