@@ -62,7 +62,7 @@ require_once(APPROOT . '/application/startup.inc.php');
 function ReadMandatoryParam($oP, $sParam, $sSanitizationFilter = 'parameter') {
     $sValue = utils::ReadParam($sParam, null, true, $sSanitizationFilter);
     if (is_null($sValue)) {
-        PrintWithDateAndTime("ERROR: Missing argument '$sParam'\n");
+        PrintWithDateAndTime("ERROR: Missing argument '$sParam'");
         UsageAndExit($oP);
     }
 
@@ -71,7 +71,7 @@ function ReadMandatoryParam($oP, $sParam, $sSanitizationFilter = 'parameter') {
 
 function HandleLog($sMsg, $bDebug){
 	if ($bDebug){
-		echo $sMsg;
+		PrintWithDateAndTime("$sMsg");
 	}
 }
 
@@ -79,10 +79,10 @@ function UsageAndExit($oP) {
     $bModeCLI = ($oP instanceof CLIPage);
 
     if ($bModeCLI) {
-        PrintWithDateAndTime("USAGE:\n");
-        PrintWithDateAndTime("php change.bulkcleaner.php --auth_user=<login> --auth_pwd=<password>  [--param_file=<file>] [--debug=true] --bulk_size=<bulk_size> [--count_lines_limit=<count_lines_limit>]\n");
+        PrintWithDateAndTime("USAGE:");
+        PrintWithDateAndTime("php change.bulkcleaner.php --auth_user=<login> --auth_pwd=<password>  [--param_file=<file>] [--debug=true] --bulk_size=<bulk_size> [--count_lines_limit=<count_lines_limit>]");
     } else {
-        PrintWithDateAndTime("Optional parameters: count_lines_limit, param_file, debug\n");
+        PrintWithDateAndTime("Optional parameters: count_lines_limit, param_file, debug");
     }
     $oP->output();
     exit(EXIT_CODE_FATAL);
@@ -135,7 +135,10 @@ function BulkDelete($iBulkSize, $bDebug)
 function ExecuteQuery($sSqlQuery, $sLogMessage, $bDebug){
 	$fStartTime = microtime(true);
     HandleLog(sprintf("%s : ongoing step", $sLogMessage), $bDebug);
-	HandleLog($sSqlQuery, $bDebug);
+
+	$sSqlQueryMsg = str_replace(PHP_EOL, '', $sSqlQuery);
+	HandleLog("Query to execute: $sSqlQueryMsg", $bDebug);
+
     /** @var \mysqli_result $oQueryResult */
     $oQueryResult = CMDBSource::Query($sSqlQuery);
     $fElapsed = microtime(true) - $fStartTime;
