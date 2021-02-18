@@ -71,9 +71,7 @@ function ReadMandatoryParam($oP, $sParam, $sSanitizationFilter = 'parameter') {
 
 function HandleLog($sMsg, $bDebug){
 	if ($bDebug){
-		IssueLog::Info($sMsg);
-	}else{
-		IssueLog::Debug($sMsg);
+		echo $sMsg;
 	}
 }
 
@@ -122,8 +120,6 @@ function BulkDelete($iBulkSize, $bDebug)
 	$fElapsed = microtime(true) - $fStartTime;
 
 	$sMsg= sprintf("%d CMDBChange row(s) deleted in %.3f s.", count($aIds), $fElapsed);
-	HandleLog($sMsg, $bDebug);
-
     return $sMsg;
 }
 
