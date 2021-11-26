@@ -86,20 +86,26 @@ trait CMDBChangeCleaner {
 	 * @throws \MySQLHasGoneAwayException
 	 */
     function GetIds($sPrefix, $iBulkSize, $bDebug){
-        $sSqlQuery = <<<SQL
-SELECT c.id as id FROM ${sPrefix}priv_change AS c 
-LEFT JOIN ${sPrefix}priv_changeop AS co ON co.changeid = c.id 
-WHERE co.id IS NULL
+	    // N°4486 don't clean very recent CMDBChange as they might still be ongoing operations creating corresponding CMDBChangeOp
+	    $oAnHourAgo = new \DateTime('-1 hour');
+	    $sAnHourAgo = $oAnHourAgo->format('Y-m-d H:i:s');
+
+	    $sSqlQuery = <<<SQL
+SELECT c.id as id 
+FROM ${sPrefix}priv_change AS c 
+	LEFT JOIN ${sPrefix}priv_changeop AS co ON co.changeid = c.id 
+WHERE co.id IS NULL 
+	AND c.date < '{$sAnHourAgo}'
 ORDER BY id DESC
 LIMIT {$iBulkSize};
 SQL;
 
-        $oQueryResult = $this->ExecuteQuery($sSqlQuery, "Get CMDBChange $iBulkSize ID(s) to remove", $bDebug);
+	    $oQueryResult = $this->ExecuteQuery($sSqlQuery, "Get CMDBChange $iBulkSize ID(s) to remove", $bDebug);
 
-        $aIds = [];
-        while($aRow = $oQueryResult->fetch_array()){
-            $aIds[] = $aRow['id'];
-        }
+	    $aIds = [];
+	    while ($aRow = $oQueryResult->fetch_array()) {
+		    $aIds[] = $aRow['id'];
+	    }
 
         return $aIds;
     }
