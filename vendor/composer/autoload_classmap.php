@@ -7,6 +7,8 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Combodo\\iTop\\Extension\\CMDBChangeCleaner\\Service\\CMDBChangeCleaner' => $baseDir . '/src/Service/CMDBChangeCleaner.php',
+    'Combodo\\iTop\\Extension\\CMDBChangeCleaner\\Service\\CMDBChangeCleanerBackgroundProcessesDefaults' => $baseDir . '/src/Service/CMDBChangeCleanerBackgroundProcessesDefaults.php',
     'Combodo\\iTop\\Extension\\CMDBChangeCleaner\\Service\\CMDBChangePeriodicCleaner' => $baseDir . '/src/Service/CMDBChangePeriodicCleaner.php',
     'Combodo\\iTop\\Extension\\CMDBChangeCleaner\\Service\\CMDBChangeScheduledCleaner' => $baseDir . '/src/Service/CMDBChangeScheduledCleaner.php',
+    'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
 );

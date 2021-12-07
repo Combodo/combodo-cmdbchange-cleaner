@@ -2,15 +2,14 @@
 
 namespace Combodo\iTop\Extension\CMDBChangeCleaner\Service;
 
-use CMDBSource;
-use IssueLog;
+class CMDBChangePeriodicCleaner implements \iBackgroundProcess
+{
+	use CMDBChangeCleaner;
 
-class CMDBChangePeriodicCleaner implements \iBackgroundProcess{
-    use CMDBChangeCleaner;
-
-    public function GetPeriodicity()
+	public function GetPeriodicity()
 	{
-		return \MetaModel::GetModuleSetting('combodo-cmdbchange-cleaner', 'cleaning_periodicity', 60);
+		return \MetaModel::GetModuleSetting('combodo-cmdbchange-cleaner', 'cleaning_periodicity',
+			CMDBChangeCleanerBackgroundProcessesDefaults::PERIODIC_PERIODICITY);
 	}
 
 	/**
@@ -18,12 +17,14 @@ class CMDBChangePeriodicCleaner implements \iBackgroundProcess{
 	 */
 	public function GetBulkSize()
 	{
-		return (int) \MetaModel::GetModuleSetting('combodo-cmdbchange-cleaner', 'periodic_cleaning_bulk_size', 5000);
+		return (int)\MetaModel::GetModuleSetting('combodo-cmdbchange-cleaner', 'periodic_cleaning_bulk_size',
+			CMDBChangeCleanerBackgroundProcessesDefaults::PERIODIC_CLEANING_BULK_SIZE);
 	}
 
 	public function IsDebug()
 	{
-		return \MetaModel::GetModuleSetting('combodo-cmdbchange-cleaner', 'debug', false);
+		return \MetaModel::GetModuleSetting('combodo-cmdbchange-cleaner', 'debug',
+			CMDBChangeCleanerBackgroundProcessesDefaults::DEBUG);
 	}
 
 	public function Process($iUnixTimeLimit)
