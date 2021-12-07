@@ -11,7 +11,7 @@ class CMDBChangeCleanerBackgroundProcessesDefaults
 	const DEBUG = false; // debug
 
 	// consts for {@see \Combodo\iTop\Extension\CMDBChangeCleaner\Service\CMDBChangePeriodicCleaner}
-	const PERIODIC_PERIODICITY        = 60; // cleaning_periodicity
+	const PERIODIC_PERIODICITY        = 60 * 60; // cleaning_periodicity
 	const PERIODIC_CLEANING_BULK_SIZE = 5000; // periodic_cleaning_bulk_size
 
 	// consts for {@see \Combodo\iTop\Extension\CMDBChangeCleaner\Service\CMDBChangeScheduledCleaner}
