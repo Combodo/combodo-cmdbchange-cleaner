@@ -8,5 +8,6 @@
 	"type" : "itop-extension",
 	"description" : "orphan CMDBChange cleaner",
 	"require" : {
+		"composer-runtime-api": "^2.0"
 	}
 }
