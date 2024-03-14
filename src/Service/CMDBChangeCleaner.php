@@ -92,8 +92,8 @@ trait CMDBChangeCleaner {
 
 	    $sSqlQuery = <<<SQL
 SELECT c.id as id 
-FROM ${sPrefix}priv_change AS c 
-	LEFT JOIN ${sPrefix}priv_changeop AS co ON co.changeid = c.id 
+FROM {$sPrefix}priv_change AS c 
+	LEFT JOIN {$sPrefix}priv_changeop AS co ON co.changeid = c.id 
 WHERE co.id IS NULL 
 	AND c.date < '{$sAnHourAgo}'
 ORDER BY id DESC
